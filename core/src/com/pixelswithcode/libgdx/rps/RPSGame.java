@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.pixelswithcode.libgdx.rps.screens.BattleScreen;
 import com.pixelswithcode.libgdx.rps.screens.LoadingScreen;
 import com.pixelswithcode.libgdx.rps.screens.MainMenuScreen;
+import com.pixelswithcode.libgdx.rps.screens.SplashScreen;
 import com.pixelswithcode.libgdx.rps.utils.GameModes;
 import com.pixelswithcode.libgdx.rps.utils.GameSceens;
 import com.pixelswithcode.libgdx.rps.utils.Globals;
@@ -32,6 +33,7 @@ public class RPSGame extends Game {
 	public GameSceens currentGameScreen;
 
 	public LoadingScreen loadingScreen;
+	public SplashScreen splashScreen;
 	public MainMenuScreen mainMenuScreen;
 	public BattleScreen battleScreen;
 
@@ -50,11 +52,12 @@ public class RPSGame extends Game {
 		this.playerTwoSelection = 0;
 
 		this.loadingScreen = new LoadingScreen(this);
+		this.splashScreen = new SplashScreen(this);
 		this.mainMenuScreen = new MainMenuScreen(this);
 		this.battleScreen = new BattleScreen(this);
 
 		this.currentGameScreen = GameSceens.MAIN_MENU_SCREEN;
-		setScreen(this.loadingScreen);
+		setScreen(this.splashScreen);
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		inputMultiplexer.addProcessor(stage);

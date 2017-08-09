@@ -15,6 +15,7 @@ public abstract class Globals {
     public static final String MAIN_PATH = "sprites/screens/main/";
     public static final String SELECT_PATH = "sprites/screens/select/";
     public static final String SETTINGS_PATH = "sprites/screens/settings/";
+    public static final String CREDITS_PATH = "sprites/screens/credits/";
 
     //Music and Sound Paths
     public static final String MUSIC_PATH = "music/";
