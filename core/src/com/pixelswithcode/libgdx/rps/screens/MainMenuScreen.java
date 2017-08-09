@@ -645,11 +645,11 @@ public class MainMenuScreen implements Screen {
                 }
             }
         });
-        ImageButton player3Button = new ImageButton(player3IconStyle);
+        final ImageButton player3Button = new ImageButton(player3IconStyle);
         player3Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!player2Button.isDisabled()) {
+                if (!player3Button.isDisabled()) {
                     if (!hasGameStarted) {
                         if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
                             clickTwoSound.play(1f);
@@ -675,11 +675,11 @@ public class MainMenuScreen implements Screen {
                 }
             }
         });
-        ImageButton player4Button = new ImageButton(player4IconStyle);
+        final ImageButton player4Button = new ImageButton(player4IconStyle);
         player4Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!player2Button.isDisabled()) {
+                if (!player4Button.isDisabled()) {
                     if (!hasGameStarted) {
                         if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
                             clickTwoSound.play(1f);
@@ -705,11 +705,11 @@ public class MainMenuScreen implements Screen {
                 }
             }
         });
-        ImageButton player5Button = new ImageButton(player5IconStyle);
+        final ImageButton player5Button = new ImageButton(player5IconStyle);
         player5Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!player2Button.isDisabled()) {
+                if (!player5Button.isDisabled()) {
                     {
                         if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
                             clickTwoSound.play(1f);
@@ -735,11 +735,11 @@ public class MainMenuScreen implements Screen {
                 }
             }
         });
-        ImageButton player6Button = new ImageButton(player6IconStyle);
+        final ImageButton player6Button = new ImageButton(player6IconStyle);
         player6Button.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!player2Button.isDisabled()) {
+                if (!player6Button.isDisabled()) {
                     if (!hasGameStarted) {
                         if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
                             clickTwoSound.play(1f);
