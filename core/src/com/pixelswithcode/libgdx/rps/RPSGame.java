@@ -119,4 +119,18 @@ public class RPSGame extends Game {
 			gamePreferences.flush();
 		}
 	}
+
+	public void resetGamePreferences() {
+		Preferences gamePreferences = Gdx.app.getPreferences(Globals.GAME_PREFS_NAME);
+
+		gamePreferences.putBoolean("player_two_unlocked", false);
+		gamePreferences.putBoolean("player_three_unlocked", false);
+		gamePreferences.putBoolean("player_four_unlocked", false);
+		gamePreferences.putBoolean("player_five_unlocked", false);
+		gamePreferences.putBoolean("player_six_unlocked", false);
+
+		gamePreferences.putBoolean("prefs_created", true);
+
+		gamePreferences.flush();
+	}
 }

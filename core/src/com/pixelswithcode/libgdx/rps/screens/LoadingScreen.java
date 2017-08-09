@@ -137,6 +137,9 @@ public class LoadingScreen implements Screen {
         GAME.assetManager.load(Globals.MAIN_PATH + "story-btn-clicked.png", Texture.class);
         GAME.assetManager.load(Globals.MAIN_PATH + "versus-btn-normal.png", Texture.class);
         GAME.assetManager.load(Globals.MAIN_PATH + "versus-btn-clicked.png", Texture.class);
+        GAME.assetManager.load(Globals.MAIN_PATH + "reset-story-dialog.png", Texture.class);
+        GAME.assetManager.load(Globals.MAIN_PATH + "yes-btn.png", Texture.class);
+        GAME.assetManager.load(Globals.MAIN_PATH + "no-btn.png", Texture.class);
 
         // Select Screen
         GAME.assetManager.load(Globals.SELECT_PATH + "select-person-dialog.png", Texture.class);
@@ -176,6 +179,7 @@ public class LoadingScreen implements Screen {
         GAME.assetManager.load(Globals.SOUND_PATH + "click2.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "click3.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "selection_fanfare.wav", Sound.class);
+        GAME.assetManager.load(Globals.SOUND_PATH + "reset.wav", Sound.class);
     }
 
     private void queueBattleScreenAssets() {

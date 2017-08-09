@@ -29,6 +29,7 @@ public class MainMenuScreen implements Screen {
 
     // Is Game starting?
     private boolean hasGameStarted;
+    private boolean isDialogVisible;
 
     // Current help page
     private int currentHelpPage;
@@ -39,6 +40,7 @@ public class MainMenuScreen implements Screen {
     private Sound clickTwoSound;
     private Sound clickThreeSound;
     private Sound selectionFanfareSound;
+    private Sound resetSound;
 
     //Main menu Textures
     private Texture backgroundTexture;
@@ -53,6 +55,10 @@ public class MainMenuScreen implements Screen {
     private Texture settingsBtnClickedTexture;
     private Texture helpBtnNormalTexture;
     private Texture helpBtnClickedTexture;
+
+    private Texture resetStoryDialogTexture;
+    private Texture yesBtnTexture;
+    private Texture noBtnTexture;
 
     //Settings textures
     private Texture settingsDialogTopTexture;
@@ -86,6 +92,9 @@ public class MainMenuScreen implements Screen {
     private Texture playerOneSelectedIconTexture;
     private Texture playerTwoSelectedIconTexture;
 
+    //Dialogs
+    private Table resetStoryDialogTable;
+
     public MainMenuScreen(final RPSGame game) {
         this.GAME = game;
         this.hasDisposed = true;
@@ -96,6 +105,7 @@ public class MainMenuScreen implements Screen {
         Gdx.app.log(TAG, "Screen showed");
         this.hasDisposed = false;
         this.hasGameStarted = false;
+        this.isDialogVisible = false;
         this.currentHelpPage = 1;
         GAME.playerOneSelection = 0;
         GAME.playerTwoSelection = 0;
@@ -169,6 +179,8 @@ public class MainMenuScreen implements Screen {
             this.clickThreeSound.dispose();
             this.selectionFanfareSound.stop();
             this.selectionFanfareSound.dispose();
+            this.resetSound.stop();
+            this.resetSound.dispose();
 
             this.backgroundTexture.dispose();
             this.gameTitleTexture.dispose();
@@ -182,6 +194,10 @@ public class MainMenuScreen implements Screen {
             this.settingsBtnClickedTexture.dispose();
             this.helpBtnNormalTexture.dispose();
             this.helpBtnClickedTexture.dispose();
+
+            this.resetStoryDialogTexture.dispose();
+            this.yesBtnTexture.dispose();
+            this.noBtnTexture.dispose();
 
             this.settingsDialogTopTexture.dispose();
             this.settingsDialogBottomTexture.dispose();
@@ -226,6 +242,7 @@ public class MainMenuScreen implements Screen {
         this.clickTwoSound = GAME.assetManager.get(Globals.SOUND_PATH + "click2.wav", Sound.class);
         this.clickThreeSound = GAME.assetManager.get(Globals.SOUND_PATH + "click3.wav", Sound.class);
         this.selectionFanfareSound = GAME.assetManager.get(Globals.SOUND_PATH + "selection_fanfare.wav", Sound.class);
+        this.resetSound = GAME.assetManager.get(Globals.SOUND_PATH + "reset.wav", Sound.class);
 
         // Main Menu sprites
         this.backgroundTexture = GAME.assetManager.get(Globals.MAIN_PATH + "main-menu-background.png", Texture.class);
@@ -240,6 +257,10 @@ public class MainMenuScreen implements Screen {
         this.settingsBtnClickedTexture = GAME.assetManager.get(Globals.MAIN_PATH + "settings-btn-clicked.png", Texture.class);
         this.helpBtnNormalTexture = GAME.assetManager.get(Globals.MAIN_PATH + "help-btn-normal.png", Texture.class);
         this.helpBtnClickedTexture = GAME.assetManager.get(Globals.MAIN_PATH + "help-btn-clicked.png", Texture.class);
+
+        this.resetStoryDialogTexture = GAME.assetManager.get(Globals.MAIN_PATH + "reset-story-dialog.png", Texture.class);
+        this.yesBtnTexture = GAME.assetManager.get(Globals.MAIN_PATH + "yes-btn.png", Texture.class);
+        this.noBtnTexture = GAME.assetManager.get(Globals.MAIN_PATH + "no-btn.png", Texture.class);
 
         // Settings screen sprites
         this.settingsDialogTopTexture = GAME.assetManager.get(Globals.SETTINGS_PATH + "settings-dialog-top.png", Texture.class);
@@ -294,29 +315,32 @@ public class MainMenuScreen implements Screen {
         storyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log(TAG, "Story Button Clicked");
+                if (!isDialogVisible) {
+                    Gdx.app.log(TAG, "Story Button Clicked");
 
-                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
-                    clickOneSound.play(1f);
-                }
+                    if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                        clickOneSound.play(1f);
+                    }
 
-                // If last player is not unlocked. Continue with story
-                if (!Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_six_unlocked")) {
-                    GAME.stage.addAction(Actions.sequence(
-                            Actions.delay(0.2f),
-                            Actions.run(new Runnable() {
-                                @Override
-                                public void run() {
-                                    GAME.currentGameMode = GameModes.STORY_MODE;
-                                    GAME.currentGameScreen = GameSceens.BATTLE_SCREEN;
-                                    GAME.setScreen(GAME.loadingScreen);
-                                }
-                            })
-                    ));
-                }
-                // Else ask player to reset game and try story again
-                else {
-
+                    // If last player is not unlocked. Continue with story
+                    if (!Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_six_unlocked")) {
+                        GAME.stage.addAction(Actions.sequence(
+                                Actions.delay(0.2f),
+                                Actions.run(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        GAME.currentGameMode = GameModes.STORY_MODE;
+                                        GAME.currentGameScreen = GameSceens.BATTLE_SCREEN;
+                                        GAME.setScreen(GAME.loadingScreen);
+                                    }
+                                })
+                        ));
+                    }
+                    // Else ask player to reset game and try story again
+                    else {
+                        resetStoryDialogTable.setVisible(true);
+                        isDialogVisible = true;
+                    }
                 }
             }
         });
@@ -331,14 +355,16 @@ public class MainMenuScreen implements Screen {
         versusButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log(TAG, "Versus Button Clicked");
-                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
-                    clickOneSound.play(1f);
+                if (!isDialogVisible) {
+                    Gdx.app.log(TAG, "Versus Button Clicked");
+                    if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                        clickOneSound.play(1f);
+                    }
+
+                    GAME.currentGameMode = GameModes.VERSUS_MODE;
+
+                    setupPlayerSelectScreen();
                 }
-
-                GAME.currentGameMode = GameModes.VERSUS_MODE;
-
-                setupPlayerSelectScreen();
             }
         });
 
@@ -356,20 +382,22 @@ public class MainMenuScreen implements Screen {
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log(TAG, "Quit Button Clicked");
-                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
-                    clickOneSound.play(1f);
-                }
+                if (!isDialogVisible) {
+                    Gdx.app.log(TAG, "Quit Button Clicked");
+                    if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                        clickOneSound.play(1f);
+                    }
 
-                GAME.stage.addAction(Actions.sequence(
-                        Actions.delay(0.2f),
-                        Actions.run(new Runnable() {
-                            @Override
-                            public void run() {
-                                Gdx.app.exit();
-                            }
-                        })
-                ));
+                    GAME.stage.addAction(Actions.sequence(
+                            Actions.delay(0.2f),
+                            Actions.run(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Gdx.app.exit();
+                                }
+                            })
+                    ));
+                }
             }
         });
 
@@ -383,12 +411,14 @@ public class MainMenuScreen implements Screen {
         settingsButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log(TAG, "Settings Button Clicked");
-                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
-                    clickOneSound.play(1f);
-                }
+                if (!isDialogVisible) {
+                    Gdx.app.log(TAG, "Settings Button Clicked");
+                    if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                        clickOneSound.play(1f);
+                    }
 
-                setupSettingsScreen();
+                    setupSettingsScreen();
+                }
             }
         });
 
@@ -402,20 +432,70 @@ public class MainMenuScreen implements Screen {
         helpButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log(TAG, "Help Button Clicked");
-                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
-                    clickOneSound.play(1f);
-                }
+                if (!isDialogVisible) {
+                    Gdx.app.log(TAG, "Help Button Clicked");
+                    if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                        clickOneSound.play(1f);
+                    }
 
-                setupHelpScreen();
+                    setupHelpScreen();
+                }
             }
         });
 
         bottomButtonsTable.add(helpButton).width(11).height(11).padBottom(2).padLeft(13);
 
+        // Reset dialog Table and buttons
+        ImageButton.ImageButtonStyle yesResetBtnStyle = new ImageButton.ImageButtonStyle();
+        yesResetBtnStyle.up = new TextureRegionDrawable(new TextureRegion(this.yesBtnTexture));
+        yesResetBtnStyle.down = new TextureRegionDrawable(new TextureRegion(this.yesBtnTexture));
+        ImageButton yesResetBtn = new ImageButton(yesResetBtnStyle);
+        yesResetBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log(TAG, "Story has been reset");
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                    resetSound.play(1f);
+                }
+
+                //Reset Game
+                GAME.resetGamePreferences();
+
+                resetStoryDialogTable.setVisible(false);
+                isDialogVisible = false;
+            }
+        });
+
+        ImageButton.ImageButtonStyle noResetBtnStyle = new ImageButton.ImageButtonStyle();
+        noResetBtnStyle.up = new TextureRegionDrawable(new TextureRegion(this.noBtnTexture));
+        noResetBtnStyle.down = new TextureRegionDrawable(new TextureRegion(this.noBtnTexture));
+        ImageButton noResetBtn = new ImageButton(noResetBtnStyle);
+        noResetBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log(TAG, "Story has not been reset");
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                    clickOneSound.play(1f);
+                }
+
+                resetStoryDialogTable.setVisible(false);
+                isDialogVisible = false;
+            }
+        });
+
+        this.resetStoryDialogTable = new Table();
+        this.resetStoryDialogTable.setFillParent(true);
+        this.resetStoryDialogTable.align(Align.top);
+        this.resetStoryDialogTable.add(new Image(this.resetStoryDialogTexture)).width(38).height(25).padTop(12).padBottom(1).colspan(2).row();
+        this.resetStoryDialogTable.add(yesResetBtn).width(16).height(9).padRight(1);
+        this.resetStoryDialogTable.add(noResetBtn).width(16).height(9).padLeft(1);
+        this.resetStoryDialogTable.setVisible(false);
+
+
         GAME.stage.addActor(backgroundTable);
         GAME.stage.addActor(mainButtonsTable);
         GAME.stage.addActor(bottomButtonsTable);
+        GAME.stage.addActor(this.resetStoryDialogTable);
     }
 
     private void setupSettingsScreen() {
