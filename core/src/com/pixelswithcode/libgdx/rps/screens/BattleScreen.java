@@ -27,7 +27,6 @@ public class BattleScreen implements Screen {
     //Type enum
     private enum TYPE {
         NONE,
-        CPU_SELECT,
         ROCK,
         PAPER,
         SCISSORS
@@ -54,6 +53,11 @@ public class BattleScreen implements Screen {
 
     //Sound and music
     private Music battleThemeMusic;
+    private Music bossOneMusic;
+    private Music bossTwoMusic;
+    private Music bossThreeMusic;
+    private Music bossFourMusic;
+    private Music bossFiveMusic;
     private Sound winSound;
     private Sound loseSound;
     private Sound giggleSound;
@@ -234,6 +238,17 @@ public class BattleScreen implements Screen {
         if (!this.hasDisposed) {
             this.battleThemeMusic.stop();
             this.battleThemeMusic.dispose();
+            this.bossOneMusic.stop();
+            this.bossOneMusic.dispose();
+            this.bossTwoMusic.stop();
+            this.bossTwoMusic.dispose();
+            this.bossThreeMusic.stop();
+            this.bossThreeMusic.dispose();
+            this.bossFourMusic.stop();
+            this.bossFourMusic.dispose();
+            this.bossFiveMusic.stop();
+            this.bossFiveMusic.dispose();
+
             this.winSound.stop();
             this.winSound.dispose();
             this.loseSound.stop();
@@ -297,6 +312,12 @@ public class BattleScreen implements Screen {
     private void getAssets() {
         //Music and sounds
         this.battleThemeMusic = GAME.assetManager.get(Globals.MUSIC_PATH + "battle-theme.ogg", Music.class);
+        this.bossOneMusic = GAME.assetManager.get(Globals.MUSIC_PATH + "boss_battles/boss1.ogg", Music.class);
+        this.bossTwoMusic = GAME.assetManager.get(Globals.MUSIC_PATH + "boss_battles/boss2.ogg", Music.class);
+        this.bossThreeMusic = GAME.assetManager.get(Globals.MUSIC_PATH + "boss_battles/boss3.ogg", Music.class);
+        this.bossFourMusic = GAME.assetManager.get(Globals.MUSIC_PATH + "boss_battles/boss4.ogg", Music.class);
+        this.bossFiveMusic = GAME.assetManager.get(Globals.MUSIC_PATH + "boss_battles/boss5.ogg", Music.class);
+
         this.winSound = GAME.assetManager.get(Globals.SOUND_PATH + "win-jingle.wav", Sound.class);
         this.loseSound = GAME.assetManager.get(Globals.SOUND_PATH + "lose-jingle.wav", Sound.class);
         this.giggleSound = GAME.assetManager.get(Globals.SOUND_PATH + "giggle.wav", Sound.class);
@@ -980,8 +1001,6 @@ public class BattleScreen implements Screen {
                         }
                     }
                     if (this.playerTwoSelectionType == TYPE.NONE) {
-                        //this.playerTwoSelectionType = TYPE.CPU_SELECT;
-
                         //int selection = MathUtils.random(0, 3);
                         int selection = 2;
 
@@ -992,24 +1011,6 @@ public class BattleScreen implements Screen {
                         } else if (selection == 2) {
                             playerTwoSelectionType = TYPE.SCISSORS;
                         }
-
-                        /*GAME.stage.addAction(Actions.sequence(
-                                Actions.delay(3f),
-                                Actions.run(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        int selection = MathUtils.random(0, 3);
-
-                                        if (selection == 0) {
-                                            playerTwoSelectionType = TYPE.ROCK;
-                                        } else if (selection == 1) {
-                                            playerTwoSelectionType = TYPE.PAPER;
-                                        } else if (selection == 2) {
-                                            playerTwoSelectionType = TYPE.SCISSORS;
-                                        }
-                                    }
-                                })
-                        ));*/
                     }
 
                     if (hasBothSelected) {
@@ -1161,6 +1162,7 @@ public class BattleScreen implements Screen {
             // Game is done
             if (playerTwoScore == 2) {
                 battleThemeMusic.stop();
+                stopBossMusic();
 
                 if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
                     loseSound.play(1f);
@@ -1172,7 +1174,8 @@ public class BattleScreen implements Screen {
             }
             else if (playerOneScore == 2 && currentRound > 6)
             {
-                battleThemeMusic.stop();
+                //battleThemeMusic.stop();
+                stopBossMusic();
 
                 if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
                     winSound.play(1f);
@@ -1217,6 +1220,11 @@ public class BattleScreen implements Screen {
 
                 playerOneScore = 0;
                 playerTwoScore = 0;
+
+                if (currentRound == 6) {
+                    battleThemeMusic.stop();
+                    playBossMusic();
+                }
 
                 setupBattleScreen();
             }
@@ -1266,5 +1274,55 @@ public class BattleScreen implements Screen {
         bossNotCompletedMessageTable.add(new Image(this.beatenMessageTexture)).width(64).height(64);
 
         GAME.stage.addActor(bossNotCompletedMessageTable);
+    }
+
+    private void playBossMusic() {
+        Gdx.app.log(TAG, "Boss Music played");
+
+        switch (currentBoss) {
+            case 1:
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("music_on")) {
+                    bossOneMusic.setLooping(true);
+                    bossOneMusic.setVolume(0.5f);
+                    bossOneMusic.play();
+                }
+                break;
+            case 2:
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("music_on")) {
+                    bossTwoMusic.setLooping(true);
+                    bossTwoMusic.setVolume(0.5f);
+                    bossTwoMusic.play();
+                }
+                break;
+            case 3:
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("music_on")) {
+                    bossThreeMusic.setLooping(true);
+                    bossThreeMusic.setVolume(0.5f);
+                    bossThreeMusic.play();
+                }
+                break;
+            case 4:
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("music_on")) {
+                    bossFourMusic.setLooping(true);
+                    bossFourMusic.setVolume(0.5f);
+                    bossFourMusic.play();
+                }
+                break;
+            case 5:
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("music_on")) {
+                    bossFiveMusic.setLooping(true);
+                    bossFiveMusic.setVolume(0.5f);
+                    bossFiveMusic.play();
+                }
+                break;
+        }
+    }
+
+    private void stopBossMusic() {
+        bossOneMusic.stop();
+        bossTwoMusic.stop();
+        bossThreeMusic.stop();
+        bossFourMusic.stop();
+        bossFiveMusic.stop();
     }
 }

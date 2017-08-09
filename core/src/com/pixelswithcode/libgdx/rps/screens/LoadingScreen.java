@@ -227,6 +227,12 @@ public class LoadingScreen implements Screen {
 
         // Sound and music
         GAME.assetManager.load(Globals.MUSIC_PATH + "battle-theme.ogg", Music.class);
+        GAME.assetManager.load(Globals.MUSIC_PATH + "boss_battles/boss1.ogg", Music.class);
+        GAME.assetManager.load(Globals.MUSIC_PATH + "boss_battles/boss2.ogg", Music.class);
+        GAME.assetManager.load(Globals.MUSIC_PATH + "boss_battles/boss3.ogg", Music.class);
+        GAME.assetManager.load(Globals.MUSIC_PATH + "boss_battles/boss4.ogg", Music.class);
+        GAME.assetManager.load(Globals.MUSIC_PATH + "boss_battles/boss5.ogg", Music.class);
+
         GAME.assetManager.load(Globals.SOUND_PATH + "win-jingle.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "lose-jingle.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "giggle.wav", Sound.class);
