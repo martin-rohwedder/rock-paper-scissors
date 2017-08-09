@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.pixelswithcode.libgdx.rps.RPSGame;
+import com.pixelswithcode.libgdx.rps.utils.GameModes;
 import com.pixelswithcode.libgdx.rps.utils.GameSceens;
 import com.pixelswithcode.libgdx.rps.utils.Globals;
 
@@ -34,6 +35,8 @@ public class BattleScreen implements Screen {
 
     private final RPSGame GAME;
     private boolean hasDisposed;
+
+    private int currentRound;
 
     private int playerOneScore;
     private int playerTwoScore;
@@ -58,6 +61,12 @@ public class BattleScreen implements Screen {
     private Texture playerTwoTexture;
     private Texture npcTexture;
 
+    private Texture bossOneTexture;
+    private Texture bossTwoTexture;
+    private Texture bossThreeTexture;
+    private Texture bossFourTexture;
+    private Texture bossFiveTexture;
+
     private Texture score00Texture;
     private Texture score10Texture;
     private Texture score01Texture;
@@ -73,10 +82,25 @@ public class BattleScreen implements Screen {
     private Texture iconRockTexture;
     private Texture iconScissorsTexture;
 
+    private Texture roundOneBoxTexture;
+    private Texture roundTwoBoxTexture;
+    private Texture roundThreeBoxTexture;
+    private Texture roundFourBoxTexture;
+    private Texture roundFiveBoxTexture;
+    private Texture roundBossBoxTexture;
+
     private Texture playAgainDialogTexture;
     private Texture exitGameDialogTexture;
     private Texture yesBtnTexture;
     private Texture noBtnTexture;
+
+    // Boss Images
+    private Image bossOneImage;
+    private Image bossTwoImage;
+    private Image bossThreeImage;
+    private Image bossFourImage;
+    private Image bossFiveImage;
+    private Image npcImage;
 
     // Score Images
     private Image score00Image;
@@ -101,6 +125,13 @@ public class BattleScreen implements Screen {
     private Image iconRockP2Image;
     private Image iconScissorsP2Image;
 
+    private Image roundOneBoxImage;
+    private Image roundTwoBoxImage;
+    private Image roundThreeBoxImage;
+    private Image roundFourBoxImage;
+    private Image roundFiveBoxImage;
+    private Image roundBossBoxImage;
+
     // Play Again Dialog
     private Table playAgainDialogTable;
     private Table exitGameDialogTable;
@@ -114,6 +145,13 @@ public class BattleScreen implements Screen {
     public void show() {
         this.hasDisposed = false;
         Gdx.app.log(TAG, "Screen showed");
+
+        if (GAME.currentGameMode == GameModes.STORY_MODE) {
+            this.currentRound = 1;
+        }
+        else {
+            this.currentRound = 0;
+        }
 
         this.playerOneScore = 0;
         this.playerTwoScore = 0;
@@ -140,6 +178,7 @@ public class BattleScreen implements Screen {
     public void render(float delta) {
         switch (GAME.currentGameMode) {
             case STORY_MODE:
+                playStoryMode();
                 break;
             case VERSUS_MODE:
                 playVersusMode();
@@ -191,6 +230,12 @@ public class BattleScreen implements Screen {
             this.playerTwoTexture.dispose();
             this.npcTexture.dispose();
 
+            this.bossOneTexture.dispose();
+            this.bossTwoTexture.dispose();
+            this.bossThreeTexture.dispose();
+            this.bossFourTexture.dispose();
+            this.bossFiveTexture.dispose();
+
             this.score00Texture.dispose();
             this.score01Texture.dispose();
             this.score10Texture.dispose();
@@ -205,6 +250,13 @@ public class BattleScreen implements Screen {
             this.iconPaperTexture.dispose();
             this.iconRockTexture.dispose();
             this.iconScissorsTexture.dispose();
+
+            this.roundOneBoxTexture.dispose();
+            this.roundTwoBoxTexture.dispose();
+            this.roundThreeBoxTexture.dispose();
+            this.roundFourBoxTexture.dispose();
+            this.roundFiveBoxTexture.dispose();
+            this.roundBossBoxTexture.dispose();
 
             this.playAgainDialogTexture.dispose();
             this.exitGameDialogTexture.dispose();
@@ -230,8 +282,21 @@ public class BattleScreen implements Screen {
         //Sprites
         this.battleBackgroundTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "battle-arena-background.png", Texture.class);
 
-        this.playerOneTexture = GAME.assetManager.get(Globals.BATTLE_PATH + getPlayerTexturePath(true), Texture.class);
-        this.playerTwoTexture = GAME.assetManager.get(Globals.BATTLE_PATH + getPlayerTexturePath(false), Texture.class);
+        if (GAME.currentGameMode == GameModes.VERSUS_MODE) {
+            this.playerOneTexture = GAME.assetManager.get(Globals.BATTLE_PATH + getPlayerTexturePath(true), Texture.class);
+            this.playerTwoTexture = GAME.assetManager.get(Globals.BATTLE_PATH + getPlayerTexturePath(false), Texture.class);
+        }
+        else {
+            this.playerOneTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "person1-left.png", Texture.class);
+            this.playerTwoTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "person1-right.png");
+        }
+
+        this.bossOneTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "person2-right.png");
+        this.bossTwoTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "person3-right.png");
+        this.bossThreeTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "person4-right.png");
+        this.bossFourTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "person5-right.png");
+        this.bossFiveTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "person6-right.png");
+
         this.npcTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "story-npc.png", Texture.class);
 
         this.score00Texture = GAME.assetManager.get(Globals.BATTLE_PATH + "score-00.png", Texture.class);
@@ -249,10 +314,36 @@ public class BattleScreen implements Screen {
         this.iconRockTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "icon-rock.png", Texture.class);
         this.iconScissorsTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "icon-scissors.png", Texture.class);
 
+        this.roundOneBoxTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "round-box-1.png", Texture.class);
+        this.roundTwoBoxTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "round-box-2.png", Texture.class);
+        this.roundThreeBoxTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "round-box-3.png", Texture.class);
+        this.roundFourBoxTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "round-box-4.png", Texture.class);
+        this.roundFiveBoxTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "round-box-5.png", Texture.class);
+        this.roundBossBoxTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "round-box-boss.png", Texture.class);
+
         this.playAgainDialogTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "play-again-dialog.png", Texture.class);
         this.exitGameDialogTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "exit-game-dialog.png", Texture.class);
         this.yesBtnTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "yes-btn.png", Texture.class);
         this.noBtnTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "no-btn.png", Texture.class);
+    }
+
+    private String getNextBossPlayerTexture() {
+        String bossPlayerTexture = "person2-right.png";
+
+        if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_two_unlocked")) {
+            bossPlayerTexture = "person3-right.png";
+            if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_three_unlocked")) {
+                bossPlayerTexture = "person4-right.png";
+                if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_four_unlocked")) {
+                    bossPlayerTexture = "person5-right.png";
+                    if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_five_unlocked")) {
+                        bossPlayerTexture = "person6-right.png";
+                    }
+                }
+            }
+        }
+
+        return bossPlayerTexture;
     }
 
     private String getPlayerTexturePath(boolean isPlayerOne) {
@@ -343,7 +434,29 @@ public class BattleScreen implements Screen {
         personsTable.setFillParent(true);
         personsTable.align(Align.bottom);
         personsTable.add(new Image(this.playerOneTexture)).width(this.playerOneTexture.getWidth()).height(this.playerOneTexture.getHeight()).padBottom(16).padRight(28);
-        personsTable.add(new Image(this.playerTwoTexture)).width(this.playerTwoTexture.getWidth()).height(this.playerTwoTexture.getHeight()).padBottom(16);
+
+        if (GAME.currentGameMode == GameModes.VERSUS_MODE) {
+            personsTable.add(new Image(this.playerTwoTexture)).width(this.playerTwoTexture.getWidth()).height(this.playerTwoTexture.getHeight()).padBottom(16);
+        }
+        else {
+            this.npcImage = new Image(this.npcTexture);
+            this.bossOneImage = new Image(this.bossOneTexture);
+            this.bossTwoImage = new Image(this.bossTwoTexture);
+            this.bossThreeImage = new Image(this.bossThreeTexture);
+            this.bossFourImage = new Image(this.bossFourTexture);
+            this.bossFiveImage = new Image(this.bossFiveTexture);
+
+            showBossImage();
+
+            Stack personsStack = new Stack();
+            personsStack.add(this.npcImage);
+            personsStack.add(this.bossOneImage);
+            personsStack.add(this.bossTwoImage);
+            personsStack.add(this.bossThreeImage);
+            personsStack.add(this.bossFourImage);
+            personsStack.add(this.bossFiveImage);
+            personsTable.add(personsStack).width(5).height(15).padBottom(16);
+        }
 
         Table iconsPlayerOneTable = new Table();
         iconsPlayerOneTable.setFillParent(true);
@@ -391,6 +504,30 @@ public class BattleScreen implements Screen {
         iconsP2Stack.add(iconScissorsP2Image);
 
         iconsPlayerTwoTable.add(iconsP2Stack).width(11).height(10).padBottom(36).padLeft(31);
+
+        //Round Boxes
+        this.roundOneBoxImage = new Image(this.roundOneBoxTexture);
+        this.roundTwoBoxImage = new Image(this.roundTwoBoxTexture);
+        this.roundThreeBoxImage = new Image(this.roundThreeBoxTexture);
+        this.roundFourBoxImage = new Image(this.roundFourBoxTexture);
+        this.roundFiveBoxImage = new Image(this.roundFiveBoxTexture);
+        this.roundBossBoxImage = new Image(this.roundBossBoxTexture);
+
+        Stack roundBoxStack = new Stack();
+        roundBoxStack.add(this.roundOneBoxImage);
+        roundBoxStack.add(this.roundTwoBoxImage);
+        roundBoxStack.add(this.roundThreeBoxImage);
+        roundBoxStack.add(this.roundFourBoxImage);
+        roundBoxStack.add(this.roundFiveBoxImage);
+        roundBoxStack.add(this.roundBossBoxImage);
+
+        //Set the appropiate round box image visible.
+        showRoundImage();
+
+        Table roundBoxTable = new Table();
+        roundBoxTable.setFillParent(true);
+        roundBoxTable.align(Align.top);
+        roundBoxTable.add(roundBoxStack).width(39).height(11).padTop(5);
 
         //Play Again Dialog Table
         this.playAgainDialogTable = new Table();
@@ -498,8 +635,69 @@ public class BattleScreen implements Screen {
         GAME.stage.addActor(iconsPlayerOneTable);
         GAME.stage.addActor(iconsPlayerTwoTable);
         GAME.stage.addActor(scoreTable);
+        GAME.stage.addActor(roundBoxTable);
         GAME.stage.addActor(this.playAgainDialogTable);
         GAME.stage.addActor(this.exitGameDialogTable);
+    }
+
+    private void showBossImage() {
+        this.npcImage.setVisible(false);
+        this.bossOneImage.setVisible(false);
+        this.bossTwoImage.setVisible(false);
+        this.bossThreeImage.setVisible(false);
+        this.bossFourImage.setVisible(false);
+        this.bossFiveImage.setVisible(false);
+
+        if (currentRound < 6) {
+            this.npcImage.setVisible(true);
+        }
+        else {
+            if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_five_unlocked")) {
+                this.bossFiveImage.setVisible(true);
+            }
+            else if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_four_unlocked")) {
+                this.bossFourImage.setVisible(true);
+            }
+            else if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_three_unlocked")) {
+                this.bossThreeImage.setVisible(true);
+            }
+            else if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_two_unlocked")) {
+                this.bossTwoImage.setVisible(true);
+            }
+            else {
+                this.bossOneImage.setVisible(true);
+            }
+        }
+    }
+
+    private void showRoundImage() {
+        this.roundOneBoxImage.setVisible(false);
+        this.roundTwoBoxImage.setVisible(false);
+        this.roundThreeBoxImage.setVisible(false);
+        this.roundFourBoxImage.setVisible(false);
+        this.roundFiveBoxImage.setVisible(false);
+        this.roundBossBoxImage.setVisible(false);
+
+        switch (currentRound) {
+            case 1:
+                this.roundOneBoxImage.setVisible(true);
+                break;
+            case 2:
+                this.roundTwoBoxImage.setVisible(true);
+                break;
+            case 3:
+                this.roundThreeBoxImage.setVisible(true);
+                break;
+            case 4:
+                this.roundFourBoxImage.setVisible(true);
+                break;
+            case 5:
+                this.roundFiveBoxImage.setVisible(true);
+                break;
+            case 6:
+                this.roundBossBoxImage.setVisible(true);
+                break;
+        }
     }
 
     private void showScoreImage() {
@@ -755,5 +953,9 @@ public class BattleScreen implements Screen {
                     })
             ));
         }
+    }
+
+    private void playStoryMode() {
+
     }
 }

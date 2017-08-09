@@ -300,7 +300,17 @@ public class MainMenuScreen implements Screen {
                     clickOneSound.play(1f);
                 }
 
-                GAME.currentGameMode = GameModes.STORY_MODE;
+                GAME.stage.addAction(Actions.sequence(
+                        Actions.delay(0.2f),
+                        Actions.run(new Runnable() {
+                            @Override
+                            public void run() {
+                                GAME.currentGameMode = GameModes.STORY_MODE;
+                                GAME.currentGameScreen = GameSceens.BATTLE_SCREEN;
+                                GAME.setScreen(GAME.loadingScreen);
+                            }
+                        })
+                ));
             }
         });
 
