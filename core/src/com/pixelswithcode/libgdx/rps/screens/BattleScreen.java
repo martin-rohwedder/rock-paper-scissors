@@ -60,9 +60,11 @@ public class BattleScreen implements Screen {
     private Music bossFiveMusic;
     private Sound winSound;
     private Sound loseSound;
+    private Sound roundWinSound;
     private Sound giggleSound;
     private Sound drawSound;
     private Sound clickSound;
+    private Sound playerIconSelectionSound;
 
     //Textures
     private Texture battleBackgroundTexture;
@@ -253,12 +255,16 @@ public class BattleScreen implements Screen {
             this.winSound.dispose();
             this.loseSound.stop();
             this.loseSound.dispose();
+            this.roundWinSound.stop();
+            this.roundWinSound.dispose();
             this.giggleSound.stop();
             this.giggleSound.dispose();
             this.drawSound.stop();
             this.drawSound.dispose();
             this.clickSound.stop();
             this.clickSound.dispose();
+            this.playerIconSelectionSound.stop();
+            this.playerIconSelectionSound.dispose();
 
             this.battleBackgroundTexture.dispose();
             this.playerOneTexture.dispose();
@@ -320,9 +326,11 @@ public class BattleScreen implements Screen {
 
         this.winSound = GAME.assetManager.get(Globals.SOUND_PATH + "win-jingle.wav", Sound.class);
         this.loseSound = GAME.assetManager.get(Globals.SOUND_PATH + "lose-jingle.wav", Sound.class);
+        this.roundWinSound = GAME.assetManager.get(Globals.SOUND_PATH + "round-win-jingle.wav", Sound.class);
         this.giggleSound = GAME.assetManager.get(Globals.SOUND_PATH + "giggle.wav", Sound.class);
         this.drawSound = GAME.assetManager.get(Globals.SOUND_PATH + "draw.wav", Sound.class);
         this.clickSound = GAME.assetManager.get(Globals.SOUND_PATH + "click1.wav", Sound.class);
+        this.playerIconSelectionSound = GAME.assetManager.get(Globals.SOUND_PATH + "player-icon-selection.wav", Sound.class);
 
         //Sprites
         this.battleBackgroundTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "battle-arena-background.png", Texture.class);
@@ -798,19 +806,37 @@ public class BattleScreen implements Screen {
                     if (this.playerOneSelectionType == TYPE.NONE) {
                         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
                             this.playerOneSelectionType = TYPE.ROCK;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         } else if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
                             this.playerOneSelectionType = TYPE.PAPER;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         } else if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
                             this.playerOneSelectionType = TYPE.SCISSORS;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         }
                     }
                     if (this.playerTwoSelectionType == TYPE.NONE) {
                         if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
                             this.playerTwoSelectionType = TYPE.ROCK;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         } else if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
                             this.playerTwoSelectionType = TYPE.PAPER;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         } else if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
                             this.playerTwoSelectionType = TYPE.SCISSORS;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         }
                     }
 
@@ -994,10 +1020,19 @@ public class BattleScreen implements Screen {
                     if (this.playerOneSelectionType == TYPE.NONE) {
                         if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
                             this.playerOneSelectionType = TYPE.ROCK;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         } else if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
                             this.playerOneSelectionType = TYPE.PAPER;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         } else if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
                             this.playerOneSelectionType = TYPE.SCISSORS;
+                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                playerIconSelectionSound.play(0.5f);
+                            }
                         }
                     }
                     if (this.playerTwoSelectionType == TYPE.NONE) {
@@ -1149,11 +1184,6 @@ public class BattleScreen implements Screen {
                     ));
                 }
             }
-            else
-            {
-                //currentRound++;
-                //hasNewRoundStarted = true;
-            }
         } else {
             currentRound++;
 
@@ -1215,7 +1245,7 @@ public class BattleScreen implements Screen {
             }
             else if (playerOneScore == 2 && currentRound <= 6) {
                 if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
-                    winSound.play(1f);
+                    roundWinSound.play(1f);
                 }
 
                 playerOneScore = 0;

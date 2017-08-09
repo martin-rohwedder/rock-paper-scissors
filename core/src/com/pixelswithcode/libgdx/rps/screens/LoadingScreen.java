@@ -235,8 +235,10 @@ public class LoadingScreen implements Screen {
 
         GAME.assetManager.load(Globals.SOUND_PATH + "win-jingle.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "lose-jingle.wav", Sound.class);
+        GAME.assetManager.load(Globals.SOUND_PATH + "round-win-jingle.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "giggle.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "draw.wav", Sound.class);
         GAME.assetManager.load(Globals.SOUND_PATH + "click1.wav", Sound.class);
+        GAME.assetManager.load(Globals.SOUND_PATH + "player-icon-selection.wav", Sound.class);
     }
 }
