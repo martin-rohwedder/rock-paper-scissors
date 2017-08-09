@@ -1036,8 +1036,7 @@ public class BattleScreen implements Screen {
                         }
                     }
                     if (this.playerTwoSelectionType == TYPE.NONE) {
-                        //int selection = MathUtils.random(0, 3);
-                        int selection = 2;
+                        int selection = MathUtils.random(0, 3);
 
                         if (selection == 0) {
                             playerTwoSelectionType = TYPE.ROCK;
