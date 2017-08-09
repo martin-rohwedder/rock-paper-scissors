@@ -316,7 +316,7 @@ public class MainMenuScreen implements Screen {
                 }
                 // Else ask player to reset game and try story again
                 else {
-                    
+
                 }
             }
         });
