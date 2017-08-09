@@ -117,7 +117,6 @@ public class MainMenuScreen implements Screen {
     @Override
     public void render(float delta) {
         if (hasGameStarted) {
-            //TODO: Delay and start game based on game mode
             GAME.stage.addAction(Actions.sequence(
                     Actions.run(new Runnable() {
                         @Override
@@ -296,21 +295,29 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log(TAG, "Story Button Clicked");
+
                 if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
                     clickOneSound.play(1f);
                 }
 
-                GAME.stage.addAction(Actions.sequence(
-                        Actions.delay(0.2f),
-                        Actions.run(new Runnable() {
-                            @Override
-                            public void run() {
-                                GAME.currentGameMode = GameModes.STORY_MODE;
-                                GAME.currentGameScreen = GameSceens.BATTLE_SCREEN;
-                                GAME.setScreen(GAME.loadingScreen);
-                            }
-                        })
-                ));
+                // If last player is not unlocked. Continue with story
+                if (!Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_six_unlocked")) {
+                    GAME.stage.addAction(Actions.sequence(
+                            Actions.delay(0.2f),
+                            Actions.run(new Runnable() {
+                                @Override
+                                public void run() {
+                                    GAME.currentGameMode = GameModes.STORY_MODE;
+                                    GAME.currentGameScreen = GameSceens.BATTLE_SCREEN;
+                                    GAME.setScreen(GAME.loadingScreen);
+                                }
+                            })
+                    ));
+                }
+                // Else ask player to reset game and try story again
+                else {
+                    
+                }
             }
         });
 

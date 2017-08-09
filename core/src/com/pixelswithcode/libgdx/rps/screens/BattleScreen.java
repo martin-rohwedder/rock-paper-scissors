@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -26,6 +27,7 @@ public class BattleScreen implements Screen {
     //Type enum
     private enum TYPE {
         NONE,
+        CPU_SELECT,
         ROCK,
         PAPER,
         SCISSORS
@@ -37,10 +39,12 @@ public class BattleScreen implements Screen {
     private boolean hasDisposed;
 
     private int currentRound;
+    private int currentBoss;
 
     private int playerOneScore;
     private int playerTwoScore;
 
+    private boolean gameOver;
     private boolean isGameDone;
     private boolean hasBothSelected;
     private boolean isRoundDone;
@@ -51,6 +55,7 @@ public class BattleScreen implements Screen {
     //Sound and music
     private Music battleThemeMusic;
     private Sound winSound;
+    private Sound loseSound;
     private Sound giggleSound;
     private Sound drawSound;
     private Sound clickSound;
@@ -93,6 +98,9 @@ public class BattleScreen implements Screen {
     private Texture exitGameDialogTexture;
     private Texture yesBtnTexture;
     private Texture noBtnTexture;
+
+    private Texture bossCompletedMessageTexture;
+    private Texture beatenMessageTexture;
 
     // Boss Images
     private Image bossOneImage;
@@ -153,8 +161,10 @@ public class BattleScreen implements Screen {
             this.currentRound = 0;
         }
 
+        this.currentBoss = getCurrentBoss();
         this.playerOneScore = 0;
         this.playerTwoScore = 0;
+        this.gameOver = false;
         this.isGameDone = false;
         this.hasBothSelected = false;
         this.isRoundDone = false;
@@ -176,18 +186,26 @@ public class BattleScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        switch (GAME.currentGameMode) {
-            case STORY_MODE:
-                playStoryMode();
-                break;
-            case VERSUS_MODE:
-                playVersusMode();
-                break;
-        }
+        if (!gameOver) {
+            switch (GAME.currentGameMode) {
+                case STORY_MODE:
+                    playStoryMode();
+                    break;
+                case VERSUS_MODE:
+                    playVersusMode();
+                    break;
+            }
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            hasNewRoundStarted = false;
-            exitGameDialogTable.setVisible(true);
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                hasNewRoundStarted = false;
+                exitGameDialogTable.setVisible(true);
+            }
+        }
+        else {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY) || Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                GAME.currentGameScreen = GameSceens.MAIN_MENU_SCREEN;
+                GAME.setScreen(GAME.loadingScreen);
+            }
         }
     }
 
@@ -218,6 +236,8 @@ public class BattleScreen implements Screen {
             this.battleThemeMusic.dispose();
             this.winSound.stop();
             this.winSound.dispose();
+            this.loseSound.stop();
+            this.loseSound.dispose();
             this.giggleSound.stop();
             this.giggleSound.dispose();
             this.drawSound.stop();
@@ -263,6 +283,9 @@ public class BattleScreen implements Screen {
             this.yesBtnTexture.dispose();
             this.noBtnTexture.dispose();
 
+            this.bossCompletedMessageTexture.dispose();
+            this.beatenMessageTexture.dispose();
+
             GAME.assetManager.clear();
 
             this.hasDisposed = true;
@@ -275,6 +298,7 @@ public class BattleScreen implements Screen {
         //Music and sounds
         this.battleThemeMusic = GAME.assetManager.get(Globals.MUSIC_PATH + "battle-theme.ogg", Music.class);
         this.winSound = GAME.assetManager.get(Globals.SOUND_PATH + "win-jingle.wav", Sound.class);
+        this.loseSound = GAME.assetManager.get(Globals.SOUND_PATH + "lose-jingle.wav", Sound.class);
         this.giggleSound = GAME.assetManager.get(Globals.SOUND_PATH + "giggle.wav", Sound.class);
         this.drawSound = GAME.assetManager.get(Globals.SOUND_PATH + "draw.wav", Sound.class);
         this.clickSound = GAME.assetManager.get(Globals.SOUND_PATH + "click1.wav", Sound.class);
@@ -325,25 +349,9 @@ public class BattleScreen implements Screen {
         this.exitGameDialogTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "exit-game-dialog.png", Texture.class);
         this.yesBtnTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "yes-btn.png", Texture.class);
         this.noBtnTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "no-btn.png", Texture.class);
-    }
 
-    private String getNextBossPlayerTexture() {
-        String bossPlayerTexture = "person2-right.png";
-
-        if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_two_unlocked")) {
-            bossPlayerTexture = "person3-right.png";
-            if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_three_unlocked")) {
-                bossPlayerTexture = "person4-right.png";
-                if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_four_unlocked")) {
-                    bossPlayerTexture = "person5-right.png";
-                    if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_five_unlocked")) {
-                        bossPlayerTexture = "person6-right.png";
-                    }
-                }
-            }
-        }
-
-        return bossPlayerTexture;
+        this.bossCompletedMessageTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "boss-completed-message.png", Texture.class);
+        this.beatenMessageTexture = GAME.assetManager.get(Globals.BATTLE_PATH + "boss-not-completed-message.png", Texture.class);
     }
 
     private String getPlayerTexturePath(boolean isPlayerOne) {
@@ -876,7 +884,6 @@ public class BattleScreen implements Screen {
                         }
                     }
                 } else {
-                    Gdx.app.log(TAG, "Round Is Done = " + isRoundDone);
                     isRoundDone = false;
 
                     GAME.stage.addAction(Actions.sequence(
@@ -956,6 +963,308 @@ public class BattleScreen implements Screen {
     }
 
     private void playStoryMode() {
+        if (this.playerOneScore == 2 || this.playerTwoScore == 2) {
+            isGameDone = true;
+        }
 
+        if (!isGameDone) {
+            if (hasNewRoundStarted) {
+                if (!isRoundDone) {
+                    if (this.playerOneSelectionType == TYPE.NONE) {
+                        if (Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+                            this.playerOneSelectionType = TYPE.ROCK;
+                        } else if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+                            this.playerOneSelectionType = TYPE.PAPER;
+                        } else if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+                            this.playerOneSelectionType = TYPE.SCISSORS;
+                        }
+                    }
+                    if (this.playerTwoSelectionType == TYPE.NONE) {
+                        //this.playerTwoSelectionType = TYPE.CPU_SELECT;
+
+                        //int selection = MathUtils.random(0, 3);
+                        int selection = 2;
+
+                        if (selection == 0) {
+                            playerTwoSelectionType = TYPE.ROCK;
+                        } else if (selection == 1) {
+                            playerTwoSelectionType = TYPE.PAPER;
+                        } else if (selection == 2) {
+                            playerTwoSelectionType = TYPE.SCISSORS;
+                        }
+
+                        /*GAME.stage.addAction(Actions.sequence(
+                                Actions.delay(3f),
+                                Actions.run(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int selection = MathUtils.random(0, 3);
+
+                                        if (selection == 0) {
+                                            playerTwoSelectionType = TYPE.ROCK;
+                                        } else if (selection == 1) {
+                                            playerTwoSelectionType = TYPE.PAPER;
+                                        } else if (selection == 2) {
+                                            playerTwoSelectionType = TYPE.SCISSORS;
+                                        }
+                                    }
+                                })
+                        ));*/
+                    }
+
+                    if (hasBothSelected) {
+                        switch (this.playerOneSelectionType) {
+                            case ROCK:
+                                GAME.stage.addAction(Actions.sequence(
+                                        Actions.delay(2f),
+                                        Actions.run(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                iconRockP1Image.setVisible(true);
+                                                isRoundDone = true;
+                                            }
+                                        })
+                                ));
+                                break;
+                            case PAPER:
+                                GAME.stage.addAction(Actions.sequence(
+                                        Actions.delay(2f),
+                                        Actions.run(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                iconPaperP1Image.setVisible(true);
+                                                isRoundDone = true;
+                                            }
+                                        })
+                                ));
+                                break;
+                            case SCISSORS:
+                                GAME.stage.addAction(Actions.sequence(
+                                        Actions.delay(2f),
+                                        Actions.run(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                iconScissorsP1Image.setVisible(true);
+                                                isRoundDone = true;
+                                            }
+                                        })
+                                ));
+                                break;
+                        }
+                        switch (this.playerTwoSelectionType) {
+                            case ROCK:
+                                GAME.stage.addAction(Actions.sequence(
+                                        Actions.delay(2f),
+                                        Actions.run(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                iconRockP2Image.setVisible(true);
+                                                isRoundDone = true;
+                                            }
+                                        })
+                                ));
+                                break;
+                            case PAPER:
+                                GAME.stage.addAction(Actions.sequence(
+                                        Actions.delay(2f),
+                                        Actions.run(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                iconPaperP2Image.setVisible(true);
+                                                isRoundDone = true;
+                                            }
+                                        })
+                                ));
+                                break;
+                            case SCISSORS:
+                                GAME.stage.addAction(Actions.sequence(
+                                        Actions.delay(2f),
+                                        Actions.run(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                iconScissorsP2Image.setVisible(true);
+                                                isRoundDone = true;
+                                            }
+                                        })
+                                ));
+                                break;
+                        }
+                    }
+                    //If both has not selected
+                    else {
+                        if (this.playerOneSelectionType != TYPE.NONE) {
+                            this.iconReadyP1Image.setVisible(true);
+                        }
+                        if (this.playerTwoSelectionType != TYPE.NONE) {
+                            this.iconReadyP2Image.setVisible(true);
+                        }
+                        if (this.playerOneSelectionType != TYPE.NONE && this.playerTwoSelectionType != TYPE.NONE) {
+                            hasBothSelected = true;
+                        }
+                    }
+                } else {
+                    //Round is done bracket
+                    isRoundDone = false;
+
+                    GAME.stage.addAction(Actions.sequence(
+                            Actions.delay(3f),
+                            Actions.run(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //Player one won the round
+                                    if (whoWonTheRound() == 1) {
+                                        playerOneScore++;
+                                        if (playerOneScore < 2) {
+                                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                                giggleSound.play(1f);
+                                            }
+                                        }
+                                    }
+                                    //Player Two won the round
+                                    else if (whoWonTheRound() == 2) {
+                                        playerTwoScore++;
+                                        if (playerTwoScore < 2) {
+                                            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                                giggleSound.play(1f);
+                                            }
+                                        }
+                                    }
+                                    //It was a draw
+                                    else {
+                                        if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                                            drawSound.play(1f);
+                                        }
+                                    }
+
+                                    playerOneSelectionType = TYPE.NONE;
+                                    playerTwoSelectionType = TYPE.NONE;
+                                    hasBothSelected = false;
+                                    //hasNewRoundStarted = false;
+                                    Gdx.app.log(TAG, "Score P1: " + playerOneScore);
+                                    Gdx.app.log(TAG, "Score P2: " + playerTwoScore);
+                                    setupBattleScreen();
+                                }
+                            })
+                    ));
+                }
+            }
+            else
+            {
+                //currentRound++;
+                //hasNewRoundStarted = true;
+            }
+        } else {
+            currentRound++;
+
+            Gdx.app.log(TAG, "Current Round is: " + currentRound);
+
+            // Game is done
+            if (playerTwoScore == 2) {
+                battleThemeMusic.stop();
+
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                    loseSound.play(1f);
+                }
+
+                gameOver = true;
+
+                setupBossNotCompletedScreen();
+            }
+            else if (playerOneScore == 2 && currentRound > 6)
+            {
+                battleThemeMusic.stop();
+
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                    winSound.play(1f);
+                }
+
+                switch (currentBoss) {
+                    case 1:
+                        currentBoss++;
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putBoolean("player_two_unlocked", true);
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
+                        break;
+                    case 2:
+                        currentBoss++;
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putBoolean("player_three_unlocked", true);
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
+                        break;
+                    case 3:
+                        currentBoss++;
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putBoolean("player_four_unlocked", true);
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
+                        break;
+                    case 4:
+                        currentBoss++;
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putBoolean("player_five_unlocked", true);
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
+                        break;
+                    case 5:
+                        currentBoss++;
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putBoolean("player_six_unlocked", true);
+                        Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
+                        break;
+                }
+
+                gameOver = true;
+
+                setupBossCompletedScreen();
+            }
+            else if (playerOneScore == 2 && currentRound <= 6) {
+                if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("sound_on")) {
+                    winSound.play(1f);
+                }
+
+                playerOneScore = 0;
+                playerTwoScore = 0;
+
+                setupBattleScreen();
+            }
+
+            isGameDone = false;
+            isRoundDone = false;
+            hasNewRoundStarted = true;
+        }
+    }
+
+    private int getCurrentBoss() {
+        int boss = 1;
+
+        if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_five_unlocked")) {
+            boss = 5;
+        }
+        else if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_four_unlocked")) {
+            boss = 4;
+        }
+        else if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_three_unlocked")) {
+            boss = 3;
+        }
+        else if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getBoolean("player_two_unlocked")) {
+            boss = 2;
+        }
+
+        return boss;
+    }
+
+    private void setupBossCompletedScreen() {
+        GAME.stage.clear();
+
+        Table bossCompletedMessageTable = new Table();
+        bossCompletedMessageTable.setFillParent(true);
+        bossCompletedMessageTable.align(Align.bottomLeft);
+        bossCompletedMessageTable.add(new Image(this.bossCompletedMessageTexture)).width(64).height(64);
+
+        GAME.stage.addActor(bossCompletedMessageTable);
+    }
+
+    private void setupBossNotCompletedScreen() {
+        GAME.stage.clear();
+
+        Table bossNotCompletedMessageTable = new Table();
+        bossNotCompletedMessageTable.setFillParent(true);
+        bossNotCompletedMessageTable.align(Align.bottomLeft);
+        bossNotCompletedMessageTable.add(new Image(this.beatenMessageTexture)).width(64).height(64);
+
+        GAME.stage.addActor(bossNotCompletedMessageTable);
     }
 }
