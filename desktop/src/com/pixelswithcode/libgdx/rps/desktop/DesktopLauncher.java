@@ -1,6 +1,8 @@
 package com.pixelswithcode.libgdx.rps.desktop;
 
 import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.pixelswithcode.libgdx.rps.RPSGame;
@@ -12,6 +14,7 @@ public class DesktopLauncher {
 		config.title = "Rock, Paper, Scissors";
 		config.width = 768;
 		config.height = 768;
+		config.addIcon("sprites/icon.png", Files.FileType.Internal);
 		//config.width = 1920;
 		//config.height = 1080;
 		//config.fullscreen = true;
