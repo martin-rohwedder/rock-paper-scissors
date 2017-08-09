@@ -1,7 +1,7 @@
 package com.pixelswithcode.libgdx.rps.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Align;
 import com.pixelswithcode.libgdx.rps.RPSGame;
 import com.pixelswithcode.libgdx.rps.utils.Globals;
 
-public class LoadingScreen implements Screen {
+public class LoadingScreen extends ScreenAdapter {
 
     private final String TAG = LoadingScreen.class.getSimpleName();
 
@@ -58,21 +58,6 @@ public class LoadingScreen implements Screen {
                     break;
             }
         }
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
     }
 
     @Override

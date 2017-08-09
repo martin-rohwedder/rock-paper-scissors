@@ -2,7 +2,7 @@ package com.pixelswithcode.libgdx.rps.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
@@ -22,7 +22,7 @@ import com.pixelswithcode.libgdx.rps.utils.GameModes;
 import com.pixelswithcode.libgdx.rps.utils.GameSceens;
 import com.pixelswithcode.libgdx.rps.utils.Globals;
 
-public class BattleScreen implements Screen {
+public class BattleScreen extends ScreenAdapter {
 
     //Type enum
     private enum TYPE {
@@ -213,21 +213,6 @@ public class BattleScreen implements Screen {
                 GAME.setScreen(GAME.loadingScreen);
             }
         }
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
     }
 
     @Override
