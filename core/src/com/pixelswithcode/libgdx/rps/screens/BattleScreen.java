@@ -163,7 +163,14 @@ public class BattleScreen extends ScreenAdapter {
         Gdx.app.log(TAG, "Screen showed");
 
         if (GAME.currentGameMode == GameModes.STORY_MODE) {
-            this.currentRound = 1;
+            if (Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).contains("current_round")) {
+                this.currentRound = Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getInteger("current_round");
+            }
+            else {
+                Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putInteger("current_round", 1);
+                Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
+                this.currentRound = Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).getInteger("current_round");
+            }
         }
         else {
             this.currentRound = 0;
@@ -188,8 +195,15 @@ public class BattleScreen extends ScreenAdapter {
         //Start music
         this.battleThemeMusic.setVolume(0.5f);
         this.battleThemeMusic.setLooping(true);
-        if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("music_on")) {
-            this.battleThemeMusic.play();
+
+        if (currentRound != 6) {
+            if (Gdx.app.getPreferences(Globals.SETTINGS_PREFS_NAME).getBoolean("music_on")) {
+                this.battleThemeMusic.play();
+            }
+        }
+        else {
+            battleThemeMusic.stop();
+            playBossMusic();
         }
     }
 
@@ -1228,6 +1242,9 @@ public class BattleScreen extends ScreenAdapter {
 
                 gameOver = true;
 
+                Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putInteger("current_round", 1);
+                Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
+
                 setupBossCompletedScreen();
             }
             else if (playerOneScore == 2 && currentRound <= 6) {
@@ -1242,6 +1259,9 @@ public class BattleScreen extends ScreenAdapter {
                     battleThemeMusic.stop();
                     playBossMusic();
                 }
+
+                Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).putInteger("current_round", currentRound);
+                Gdx.app.getPreferences(Globals.GAME_PREFS_NAME).flush();
 
                 setupBattleScreen();
             }

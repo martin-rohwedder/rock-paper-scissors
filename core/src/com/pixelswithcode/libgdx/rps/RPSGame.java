@@ -132,6 +132,8 @@ public class RPSGame extends Game {
 		gamePreferences.putBoolean("player_five_unlocked", false);
 		gamePreferences.putBoolean("player_six_unlocked", false);
 
+		gamePreferences.putInteger("current_round", 1);
+
 		gamePreferences.putBoolean("prefs_created", true);
 
 		gamePreferences.flush();
