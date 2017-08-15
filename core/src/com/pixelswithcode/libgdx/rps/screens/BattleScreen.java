@@ -43,6 +43,8 @@ public class BattleScreen extends ScreenAdapter {
     private int playerOneScore;
     private int playerTwoScore;
 
+    private float selectIconDelay;
+
     private boolean gameOver;
     private boolean isGameDone;
     private boolean hasBothSelected;
@@ -168,6 +170,7 @@ public class BattleScreen extends ScreenAdapter {
         }
 
         this.currentBoss = getCurrentBoss();
+        this.selectIconDelay = 1f;
         this.playerOneScore = 0;
         this.playerTwoScore = 0;
         this.gameOver = false;
@@ -829,7 +832,7 @@ public class BattleScreen extends ScreenAdapter {
                         switch (this.playerOneSelectionType) {
                             case ROCK:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -841,7 +844,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case PAPER:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -853,7 +856,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case SCISSORS:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -867,7 +870,7 @@ public class BattleScreen extends ScreenAdapter {
                         switch (this.playerTwoSelectionType) {
                             case ROCK:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -879,7 +882,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case PAPER:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -891,7 +894,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case SCISSORS:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -919,7 +922,7 @@ public class BattleScreen extends ScreenAdapter {
                     isRoundDone = false;
 
                     GAME.stage.addAction(Actions.sequence(
-                            Actions.delay(4f),
+                            Actions.delay(this.selectIconDelay + 0.5f),
                             Actions.run(new Runnable() {
                                 @Override
                                 public void run() {
@@ -1036,7 +1039,7 @@ public class BattleScreen extends ScreenAdapter {
                         switch (this.playerOneSelectionType) {
                             case ROCK:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -1048,7 +1051,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case PAPER:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -1060,7 +1063,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case SCISSORS:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -1074,7 +1077,7 @@ public class BattleScreen extends ScreenAdapter {
                         switch (this.playerTwoSelectionType) {
                             case ROCK:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -1086,7 +1089,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case PAPER:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -1098,7 +1101,7 @@ public class BattleScreen extends ScreenAdapter {
                                 break;
                             case SCISSORS:
                                 GAME.stage.addAction(Actions.sequence(
-                                        Actions.delay(2f),
+                                        Actions.delay(this.selectIconDelay),
                                         Actions.run(new Runnable() {
                                             @Override
                                             public void run() {
@@ -1127,7 +1130,7 @@ public class BattleScreen extends ScreenAdapter {
                     isRoundDone = false;
 
                     GAME.stage.addAction(Actions.sequence(
-                            Actions.delay(3f),
+                            Actions.delay(this.selectIconDelay + 0.5f),
                             Actions.run(new Runnable() {
                                 @Override
                                 public void run() {
